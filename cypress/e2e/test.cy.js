@@ -1,21 +1,29 @@
-describe('template spec', () => {
-  it('passes', () => {
+
+
+describe('GreenKart Test Suite', function(){  it('Should be able to Load the HomePage Successfully', function(){
     cy.visit('https://rahulshettyacademy.com/seleniumPractise/#/')
-    // Title font details
-    cy.get('.redLogo').then($el => {
-      const styles = window.getComputedStyle($el[0])
-      const fontFamily = styles.getPropertyValue('font-family')
-      const fontSize = styles.getPropertyValue('font-size')
-      cy.log(`Font: ${fontFamily}, Size: ${fontSize}`)    
+    cy.get('.search-keyword').type('ca')
+    cy.wait(2000)
+    // cy.get('.product:visible').should('have.length', 4)
+
+    // Parent-child chaining
+    cy.get(`.products`).as(`productlocator`)
+    cy.get('@productlocator').find('.product').should('have.length', 4)
+
+    cy.get('@productlocator').find('.product').eq(2).contains('ADD TO CART').click()  // add third element only. 
+
+    cy.get('@productlocator').find('.product').each(($el, indexedDB, $list) => {
+      const textVeg = $el.find('.product-name').text()
+      if(textVeg.includes('Cashews'))   // to click on a specific product after a loop, used in cases where sequence is dynamic. 
+        {
+          cy.wrap($el).contains('ADD TO CART').click()  // click with find() is deprecated. so use wrap
+        }
     })
-    //title font validation
-    cy.get('.redLogo') // your element selector
-      .should('be.visible')
-      .invoke('css', 'font-family')
-      .then(fontFamily => {
-        cy.log('Font Family:', fontFamily)
-        expect(fontFamily).to.include('Roman') // or any expected font
+
+    cy.get(`.brand.greenLogo`).then((LogoElement) => {
+      cy.log(LogoElement.text())
     })
+
+    
   })
 })
-
